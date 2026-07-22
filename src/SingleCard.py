@@ -310,7 +310,7 @@ def singlecard_intro_box(out_dir: Path):
 def canonical_single_name(card: dict) -> str:
     """
     Nome canônico para cartas de UMA imagem:
-      - adventure: usar a face principal (faces[0].name)
+      - adventure/prepare: usar a face principal (faces[0].name)
         * detecta por layout OU pela estrutura das faces (Instant/Sorcery 'Adventure')
       - demais: card['name']
     """
@@ -318,8 +318,8 @@ def canonical_single_name(card: dict) -> str:
     layout = (card.get("layout") or "").lower()
     faces = card.get("card_faces") or []
 
-    # 1) Se o layout já disser 'adventure', usamos face[0]
-    if layout == "adventure" and faces and (faces[0].get("name") or "").strip():
+    # 1) Se o layout já disser 'adventure' ou 'prepare', usamos face[0]
+    if layout in {"adventure", "prepare"} and faces and (faces[0].get("name") or "").strip():
         return faces[0]["name"].strip()
 
     # 2) Fallback robusto: detectar adventure pela estrutura das faces
