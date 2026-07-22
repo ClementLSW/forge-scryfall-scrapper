@@ -146,7 +146,7 @@ def canonical_name_for_single_image(card: dict) -> str:
     """
     Keep close to your existing behavior:
     - split/aftermath -> concat face names without spaces
-    - adventure -> use face[0]
+    - adventure/prepare -> use face[0]
     - otherwise -> card['name']
     """
     layout = (card.get("layout") or "").lower()
@@ -156,7 +156,7 @@ def canonical_name_for_single_image(card: dict) -> str:
             combined = "".join((f.get("name") or "").replace(" ", "") for f in faces).strip()
             if combined:
                 return combined
-    if layout == "adventure":
+    if layout in {"adventure", "prepare"}:
         faces = card.get("card_faces") or []
         if faces and (faces[0].get("name") or "").strip():
             return faces[0]["name"].strip()
@@ -187,7 +187,7 @@ def pick_image_entries(card: dict) -> List[Tuple[str, str, int, str]]:
             out.append((u, nm, 1, "h90"))  # rotate only if needed (optional)
             return out
 
-        if layout == "adventure":
+        if layout in {"adventure", "prepare"}:
             nm = canonical_name_for_single_image(card)
             out.append((u, nm, 1, ""))
             return out

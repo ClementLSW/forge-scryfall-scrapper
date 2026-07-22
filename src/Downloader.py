@@ -405,7 +405,7 @@ def display_name_for_single_image(card: dict) -> str:
     Single-image cases:
       - Split / Aftermath: concatenates both face names without spaces
         (e.g., "AssaultBattery")
-      - Adventure: uses ONLY the primary face name (faces[0])
+      - Adventure / Prepare: uses ONLY the primary face name (faces[0])
       - All other single-face cards: uses card["name"]
     """
     layout = (card.get("layout") or "").lower()
@@ -415,7 +415,7 @@ def display_name_for_single_image(card: dict) -> str:
             combined = "".join((f.get("name") or "").replace(" ", "") for f in faces).strip()
             if combined:
                 return combined
-    if layout == "adventure":
+    if layout in {"adventure", "prepare"}:
         faces = card.get("card_faces") or []
         if faces and (faces[0].get("name") or "").strip():
             return faces[0]["name"].strip()
@@ -432,6 +432,7 @@ def pick_image_entries(card: dict) -> List[ImgEntry]:
       - image_uris:
           * split/aftermath -> 1 file with concatenated name
           * flip -> 2 files: Face1 normal, Face2 rotated 180°
+          * adventure/prepare -> 1 file with the primary face name
           * others -> 1 file with card['name']
       - card_faces with image_uris -> 1 file per face (DFC etc.)
     """
@@ -453,8 +454,11 @@ def pick_image_entries(card: dict) -> List[ImgEntry]:
             entries.append(ImgEntry(u, name, None))
             return entries
         
-        if layout == "adventure":
-            name = display_name_for_single_image(card)  # Main Face
+        if layout in {"adventure", "prepare"}:
+            # Both layouts are one physical card image. Scryfall's card name
+            # contains "Main Face // inset spell", whereas Forge keys the
+            # image by the main permanent's name.
+            name = display_name_for_single_image(card)
             entries.append(ImgEntry(u, name, None))
             return entries
 

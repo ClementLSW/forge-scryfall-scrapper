@@ -265,7 +265,7 @@ def build_candidate_entries_for_card(card: dict) -> List[dict]:
                 entries.append({"url": u, "rotate": None, "candidates": cands, "ext": ext, "card": card})
                 return entries
 
-        if layout == "adventure":
+        if layout in {"adventure", "prepare"}:
             faces = card.get("card_faces") or []
             if faces:
                 cf = _concat_faces(faces, "flavor_name")
